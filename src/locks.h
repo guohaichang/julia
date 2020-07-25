@@ -57,10 +57,10 @@ static inline void jl_lock_frame_push(jl_mutex_t *lock)
     // For early bootstrap
     if (__unlikely(!ptls->current_task))
         return;
-    arraylist_t *locks = &ptls->current_task->locks;
-    size_t len = locks->len;
+    small_arraylist_t *locks = &ptls->current_task->locks;
+    uint32_t len = locks->len;
     if (__unlikely(len >= locks->max)) {
-        arraylist_grow(locks, 1);
+        small_arraylist_grow(locks, 1);
     }
     else {
         locks->len = len + 1;

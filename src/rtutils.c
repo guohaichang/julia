@@ -245,7 +245,7 @@ JL_DLLEXPORT void jl_eh_restore_state(jl_handler_t *eh)
     int8_t old_gc_state = ptls->gc_state;
     current_task->eh = eh->prev;
     ptls->pgcstack = eh->gcstack;
-    arraylist_t *locks = &current_task->locks;
+    small_arraylist_t *locks = &current_task->locks;
     if (locks->len > eh->locks_len) {
         for (size_t i = locks->len;i > eh->locks_len;i--)
             jl_mutex_unlock_nogc((jl_mutex_t*)locks->items[i - 1]);

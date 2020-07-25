@@ -271,10 +271,9 @@ static void ctx_switch(jl_ptls_t ptls)
     jl_task_t *lastt = ptls->current_task;
     // If the current task is not holding any locks, free the locks list
     // so that it can be GC'd without leaking memory
-    arraylist_t *locks = &lastt->locks;
+    small_arraylist_t *locks = &lastt->locks;
     if (locks->len == 0 && locks->items != locks->_space) {
-        arraylist_free(locks);
-        arraylist_new(locks, 0);
+        small_arraylist_free(locks);
     }
 
     int killed = (lastt->state == done_sym || lastt->state == failed_sym);
@@ -593,7 +592,7 @@ JL_DLLEXPORT jl_task_t *jl_new_task(jl_function_t *start, jl_value_t *completion
 #ifdef ENABLE_TIMINGS
     t->timing_stack = jl_root_timing;
 #endif
-    arraylist_new(&t->locks, 0);
+    small_arraylist_new(&t->locks, 0);
 
 #if defined(JL_DEBUG_BUILD)
     if (!t->copy_stack)
@@ -1108,7 +1107,7 @@ void jl_init_root_task(void *stack_lo, void *stack_hi)
     ptls->current_task->excstack = NULL;
     ptls->current_task->tid = ptls->tid;
     ptls->current_task->sticky = 1;
-    arraylist_new(&ptls->current_task->locks, 0);
+    small_arraylist_new(&ptls->current_task->locks, 0);
 
 #ifdef COPY_STACKS
     if (always_copy_stacks) {
