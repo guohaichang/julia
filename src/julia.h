@@ -1772,13 +1772,13 @@ typedef struct _jl_task_t {
     jl_value_t *next; // invasive linked list for scheduler
     jl_value_t *queue; // invasive linked list for scheduler
     jl_value_t *tls;
-    jl_sym_t *state;
     jl_value_t *donenotify;
     jl_value_t *result;
     jl_value_t *exception;
     jl_value_t *backtrace;
     jl_value_t *logstate;
     jl_function_t *start;
+    uint8_t _state;
     uint8_t sticky; // record whether this Task can be migrated to a new thread
 
 // hidden state:
@@ -1806,6 +1806,10 @@ typedef struct _jl_task_t {
     arraylist_t locks;
     jl_timing_block_t *timing_stack;
 } jl_task_t;
+
+#define JL_TASK_STATE_RUNNABLE 0
+#define JL_TASK_STATE_DONE     1
+#define JL_TASK_STATE_FAILED   2
 
 JL_DLLEXPORT jl_task_t *jl_new_task(jl_function_t*, jl_value_t*, size_t);
 JL_DLLEXPORT void jl_switchto(jl_task_t **pt);
